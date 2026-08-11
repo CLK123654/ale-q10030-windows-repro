@@ -1,0 +1,8 @@
+1. 使用psql连接一次性PostgreSQL17数据库，执行schema.sql创建dispatch命名空间、业务表、唯一约束、索引和端点槽位。
+2. 通过psql的\copy将四份CSV载入对应输入表，核对主键、布尔值、UTC时间和retry_profile的分钟序列。
+3. 执行outbox_runtime.sql创建事件规范化、槽位占用、claim_dispatch_batch和finalize_dispatch逻辑，确认函数可以在事务中调用。
+4. 运行事件展开过程，按dedupe_key保留最早事件，将有效事件映射到启用且订阅主题匹配的端点，并合并existing_dispatch_state.csv中的已有状态。
+5. 在2026-07-30T10:00:00Z以dispatcher-a领取第一轮任务，通过dispatch.claim_audit读取已领取项和端点容量阻断项。
+6. 按delivery_results.csv写入第一轮回执，查询dispatch.dispatch_job，确认成功项释放槽位，失败项按端点重试分钟数更新next_due_at_utc。
+7. 在2026-07-30T10:03:50Z以dispatcher-b领取第二轮任务并写入回执，查询派发尝试与容量控制对象，确认旧邮件租约仍占用容量。
+8. 使用psql的\copy导出event_decision.csv、claim_wave.csv、final_dispatch_state.csv和endpoint_summary.csv，按endpoint_id与dedupe_key核对事件去向、尝试次数和端点状态总数。

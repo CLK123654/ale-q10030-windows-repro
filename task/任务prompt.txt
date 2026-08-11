@@ -1,0 +1,5 @@
+支付回调平台把结算回执、风控告警和邮件通知放在同一个PostgreSQL outbox中。最近一次预发布演练里，两个dispatcher会为同一批记录等待，部分订单被重复派发；邮件端点已有未到期租约时，队列仍继续领取新任务，随后收到429响应。
+
+请使用PostgreSQL Client处理input_data/data中的事件、端点策略、现有队列状态和派发回执。rules/outbox_contract.md给出了去重口径、端点容量、领取顺序、两轮调度时间和重试规则，starter_sql/outbox_starter.sql是需要替换的故障版本。将输入载入一次性数据库，按业务主键生成outbox任务并保留来源事件，修复并发领取与回执推进，再按合同回放两轮派发。领取过程要保留租约持有人和尝试次数，未到期租约应计入对应端点的并发占用量。
+
+在output/sql中提交schema.sql和outbox_runtime.sql，在output根目录提交run.ps1。output/reports中提供event_decision.csv、claim_wave.csv、final_dispatch_state.csv和endpoint_summary.csv。SQL交给数据库团队评审，四份报表供回调平台值班人员核对事件去向、每轮领取和端点积压。整个流程只连接本机PostgreSQL服务，不访问支付、邮件或webhook地址。

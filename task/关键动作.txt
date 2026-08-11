@@ -1,0 +1,6 @@
+读取events.csv、endpoint_policy.csv、existing_dispatch_state.csv、delivery_results.csv和outbox_contract.md，确认事件去重、端点容量、租约与退避口径。
+使用psql载入四份业务数据，建立出站任务、派发尝试和端点槽位所需的PostgreSQL对象。
+按dedupe_key选取最早事件，将无效载荷、重复事件、无订阅主题和邮件退订分别裁决，再展开可派发任务。
+实现基于行锁跳过语义的批量领取，让未到期租约持续计入端点占用量，并记录每轮候选的领取或容量阻断结果。
+按delivery_results.csv写入两轮回执，校验租约持有人和attempt_no，分别收敛成功派发与到期重试。
+导出事件裁决、领取波次、最终任务状态和端点汇总，按主键与状态复核四份报表之间的对应关系。

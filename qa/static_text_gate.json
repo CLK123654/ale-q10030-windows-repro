@@ -1,0 +1,10 @@
+{
+  "gate": "natural_language_static_scan",
+  "source_count": 219,
+  "plain_text_source_count": 9,
+  "workbook_text_cell_count": 210,
+  "missing": [],
+  "violations": [],
+  "humanizer_risk_hits": [],
+  "pass": true
+}

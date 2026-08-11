@@ -1,0 +1,7 @@
+Windows11、macOS13及主流64位Linux均可运行。Windows11直接使用本机PostgreSQL17服务和配套psql，不依赖WSL、容器、Bash或POSIX Shell。
+
+主软件是PostgreSQL Client。任务中的COPY载入、唯一约束、事务行锁、FOR UPDATE SKIP LOCKED、PL/pgSQL函数和时区运算需要由真实PostgreSQL17实例执行，文本搜索或其它数据库不能替代这些语义。Windows入口使用PowerShell7，macOS和Linux可用相同psql参数调用等价入口。
+
+安装PostgreSQL17时可以联网，正式运行只访问本机回环地址。PostgreSQL采用开源许可，不需要商业插件或专用硬件。执行账号需要创建临时数据库、schema、类型、表、索引和函数的权限，输入目录保持只读，output目录必须可写。
+
+本题的主要风险是把未到期租约排除在端点占用量之外，或让回执在worker_id、endpoint_id、dedupe_key和attempt_no不一致时仍能推进状态。时间值按UTC处理，retry_profile中的数字单位为分钟。

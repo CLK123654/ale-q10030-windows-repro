@@ -1,0 +1,44 @@
+{
+  "gate": "humanizer_zh_review",
+  "basis": "当前正文、输入说明、业务合同和两份工作簿显示文字",
+  "online_ai_detection_used_as_conclusion": false,
+  "review_order": [
+    "业务结构与逻辑",
+    "信息分层与交付闭合",
+    "humanizer-zh语言复核",
+    "字符门禁",
+    "跨题相似度"
+  ],
+  "structure_review": {
+    "role": "数据库团队",
+    "consumer": "回调平台值班人员与数据库评审人员",
+    "business_trigger": "预发布演练出现重复派发、端点过载和错误重试",
+    "consumed_inputs": 6,
+    "connected_work_parts": 6,
+    "declared_deliverables": 7,
+    "unexplained_hard_numbers": 0,
+    "pseudo_citations": 0,
+    "reasoning_breaks": 0,
+    "unique_implementation_prescriptions": 0
+  },
+  "pattern_review": {
+    "promotional_language": 0,
+    "vague_attribution": 0,
+    "formulaic_conclusion": 0,
+    "negative_parallelism": 0,
+    "forced_triad": 0,
+    "chatbot_trace": 0,
+    "excessive_dash": 0,
+    "ai_vocabulary_cluster": 0
+  },
+  "scores": {
+    "directness": 10,
+    "rhythm": 9,
+    "reader_trust": 9,
+    "authenticity": 9,
+    "conciseness": 9,
+    "total": 46,
+    "threshold": 45
+  },
+  "pass": true
+}

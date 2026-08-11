@@ -133,7 +133,9 @@ function Assert-NaturalText {
     [char]34, [char]39, [char]96, '“', '”', '‘', '’', '＂', '＇',
     '「', '」', '『', '』', '«', '»', '‹', '›', '〝', '〞', '〟', '《', '》', '〈', '〉'
   )
-  $boundary = '(?:[\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff][\s\u00a0]+[A-Za-z0-9]|[A-Za-z0-9][\s\u00a0]+[\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff]|[A-Za-z][\s\u00a0]+[0-9]|[0-9][\s\u00a0]+[A-Za-z])'
+  $space = '[\t \u00a0\u1680\u2000-\u200a\u202f\u205f\u3000]+'
+  $han = '[\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff]'
+  $boundary = "(?:$han$space[A-Za-z0-9]|[A-Za-z0-9]$space$han|[A-Za-z]$space[0-9]|[0-9]$space[A-Za-z])"
   $riskTerms = @('此外', '至关重要', '深入探讨', '彰显', '赋能', '无缝', '不断演变的格局', '不仅', '不只是', '值得注意的是', '专家认为', '行业报告显示', '观察者指出', '未来展望', '挑战与未来', '——')
   $processTerms = @('制题返修', '去AI', '修改题目', '规则调整', 'Windows复现', 'GitHub Actions', '双干净目录', '动态变化', '负例', '附件哈希', '飞书回读', 'record_id', 'file_token')
   foreach ($text in $Texts) {

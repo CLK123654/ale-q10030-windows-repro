@@ -333,17 +333,26 @@ function Invoke-NegativeRun {
 
 function Initialize-ConcurrencyDatabase {
   param([string]$Workspace, [string]$Database)
-  Invoke-Psql $Database @('-f', (Join-Path $Workspace 'output/sql/schema.sql'))
-  Invoke-Psql $Database @('-f', (Join-Path $Workspace 'output/sql/outbox_runtime.sql'))
+  Push-Location (Join-Path $Workspace 'output/sql')
+  try {
+    Invoke-Psql $Database @('-f', 'schema.sql')
+    Invoke-Psql $Database @('-f', 'outbox_runtime.sql')
+  } finally {
+    Pop-Location
+  }
   $copies = @(
     @('dispatch.source_event(event_id,topic,dedupe_key,created_at_utc,priority,payload_valid,email_opt_in,payload_bytes)', 'events.csv'),
     @('dispatch.source_endpoint_policy(endpoint_id,topic,active,max_in_flight,retry_profile_text,endpoint_kind)', 'endpoint_policy.csv'),
     @('dispatch.source_existing_state(endpoint_id,dedupe_key,state,attempt_no,lease_owner,lease_until_utc,next_due_at_utc,provider_message_id)', 'existing_dispatch_state.csv'),
     @('dispatch.source_delivery_result(wave_id,worker_id,endpoint_id,dedupe_key,delivered_at_utc,outcome,status_code,provider_message_id)', 'delivery_results.csv')
   )
-  foreach ($copy in $copies) {
-    $inputPath = [System.IO.Path]::GetFullPath((Join-Path $Workspace "input_data/data/$($copy[1])")).Replace('\', '/')
-    Invoke-Psql $Database @('-c', "\copy $($copy[0]) FROM '$inputPath' CSV HEADER")
+  Push-Location (Join-Path $Workspace 'input_data/data')
+  try {
+    foreach ($copy in $copies) {
+      Invoke-Psql $Database @('-c', "\copy $($copy[0]) FROM '$($copy[1])' CSV HEADER")
+    }
+  } finally {
+    Pop-Location
   }
   Invoke-Psql $Database @('-c', 'SELECT dispatch.prepare_outbox();')
 }

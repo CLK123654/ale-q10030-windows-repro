@@ -1,5 +1,8 @@
+总分100分
+
 检查项一
 检查项内容：交付物与数据库入口
+分值：14分
 标准答案或判定规则：规定的建表SQL、运行时SQL、PowerShell入口和四份报表均存在。run.ps1连接一次性PostgreSQL17数据库，完成载入、事件展开、领取、回执写入和报表导出。
 关键字段或路径：output/sql/schema.sql、output/sql/outbox_runtime.sql、output/run.ps1、output/reports/event_decision.csv、output/reports/claim_wave.csv、output/reports/final_dispatch_state.csv、output/reports/endpoint_summary.csv
 容差及来源：文件路径按任务Prompt核对；SQL排版、注释和内部对象名可变。
@@ -12,6 +15,7 @@
 
 检查项二
 检查项内容：事件去重、过滤和端点展开
+分值：14分
 标准答案或判定规则：先按dedupe_key、created_at_utc和event_id确定来源事件，再依据payload_valid、主题订阅、端点启用状态和邮件退订规则得出每个事件与端点的裁决。已创建任务以endpoint_id和dedupe_key作为业务主键。
 关键字段或路径：output/reports/event_decision.csv中的event_id、endpoint_id、dedupe_key、decision、reason
 容差及来源：按event_id与endpoint_id组成的身份比对，行顺序不计分；依据events.csv、endpoint_policy.csv和outbox_contract.md复算。
@@ -24,6 +28,7 @@
 
 检查项三
 检查项内容：出站任务、派发尝试与容量模型
+分值：16分
 标准答案或判定规则：dispatch_job以endpoint_id和dedupe_key防重，dispatch_attempt保留每次领取的attempt_no、worker_id和租约时间。max_in_flight由数据库对象或事务锁机制约束，不依赖应用内估算。
 关键字段或路径：output/sql/schema.sql、output/sql/outbox_runtime.sql中的任务表、尝试记录、容量对象、约束和索引
 容差及来源：允许等价CHECK约束、索引列顺序和容量锁设计；候选任务与当前租约查询必须有可用索引。
@@ -36,6 +41,7 @@
 
 检查项四
 检查项内容：并发领取、端点容量和领取波次
+分值：18分
 标准答案或判定规则：claim_dispatch_batch在数据库事务中使用行锁跳过语义，按合同规定的priority、due时间、event_id和endpoint_id排序。每轮领取数不超过合同上限，未到期租约继续占用对应端点的并发配额。
 关键字段或路径：output/sql/outbox_runtime.sql中的dispatch.claim_dispatch_batch，output/reports/claim_wave.csv中的wave_id、worker_id、endpoint_id、dedupe_key、decision、attempt_no、lease_until_utc
 容差及来源：按wave_id、endpoint_id和dedupe_key关联，行顺序不计分；波次时间、租约期和上限来自outbox_contract.md。
@@ -48,6 +54,7 @@
 
 检查项五
 检查项内容：回执归属、成功幂等和失败退避
+分值：18分
 标准答案或判定规则：finalize_dispatch核对worker_id、endpoint_id、dedupe_key和attempt_no。成功回执将状态收敛为sent，保存provider_message_id并释放租约；失败回执按当前attempt_no从端点retry_profile取分钟数，以回执时间加退避时长得出next_due_at_utc。
 关键字段或路径：output/sql/outbox_runtime.sql中的dispatch.finalize_dispatch，output/reports/final_dispatch_state.csv中的final_state、attempt_no、next_due_at_utc、provider_message_id、last_status_code
 容差及来源：UTC时间精确到秒；retry_profile中的数字单位为分钟；来源为endpoint_policy.csv、delivery_results.csv和outbox_contract.md。
@@ -60,6 +67,7 @@
 
 检查项六
 检查项内容：最终状态与端点汇总
+分值：10分
 标准答案或判定规则：final_dispatch_state.csv中每个endpoint_id与dedupe_key只出现一次。endpoint_summary.csv由最终状态按endpoint_id和final_state分组计数，各状态数与该端点任务数可以双向复算。
 关键字段或路径：output/reports/final_dispatch_state.csv、output/reports/endpoint_summary.csv中的endpoint_id、dedupe_key、final_state和各状态计数字段
 容差及来源：按endpoint_id与dedupe_key关联，行顺序不计分；计数为整数且无容差。
@@ -72,6 +80,7 @@
 
 检查项七
 检查项内容：数据库约束与回执幂等
+分值：10分
 标准答案或判定规则：dispatch_job的联合防重键拒绝已存在的endpoint_id与dedup_key组合。finalize_dispatch只允许当前租约持有人推进尚未完成的任务，已完成的相同sent回执保持原状态。
 关键字段或路径：schema.sql中的联合主键，outbox_runtime.sql中的finalize_dispatch，dispatch_job、dispatch_attempt和容量对象
 容差及来源：SQLSTATE的具体文本不作唯一要求；任务状态、尝试次数、租约和provider_message_id必须符合outbox_contract.md。

@@ -1,4 +1,4 @@
-操作系统：Windows11、macOS或主流64位Linux。
+操作系统： Windows11、macOS或主流64位Linux。
 
 主软件为PostgreSQL Client，需要连接兼容PostgreSQL17语义的本机数据库服务；Windows11可用PowerShell7调用psql，不依赖WSL、容器或POSIX Shell。
 

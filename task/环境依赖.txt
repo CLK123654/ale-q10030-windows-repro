@@ -1,5 +1,7 @@
-操作系统：Windows11、macOS或主流64位Linux。主软件为PostgreSQL Client，需要连接兼容PostgreSQL17语义的本机数据库服务；Windows11可用PowerShell7调用psql，不依赖WSL、容器或POSIX Shell。
+操作系统：Windows11、macOS或主流64位Linux。
+
+主软件为PostgreSQL Client，需要连接兼容PostgreSQL17语义的本机数据库服务；Windows11可用PowerShell7调用psql，不依赖WSL、容器或POSIX Shell。
 
 数据库必须支持COPY载入、唯一约束、事务行锁、FOR UPDATE SKIP LOCKED、PL/pgSQL函数和时区运算。执行账号需要创建临时数据库、schema、类型、表、索引和函数，输入目录保持只读，output目录可写。安装软件时可以联网，处理期间只访问本机数据库。
 
-当前输入规模适合普通64位多核CPU和常规办公内存，不使用GPU。磁盘应能同时容纳PostgreSQL临时数据库、输入副本和四份报表。入口应设置有限超时；超时后先检查锁等待、事务未提交或数据库连接异常。
+当前输入规模适合普通64位多核CPU和常规办公内存，不使用GPU。磁盘应能同时容纳PostgreSQL临时数据库、输入副本和四份报表。需设置有限超时，覆盖本题批次处理并避免异常无限等待。

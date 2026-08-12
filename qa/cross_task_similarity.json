@@ -1,0 +1,15 @@
+{
+  "gate": "cross_task_similarity",
+  "current_qid": "10030",
+  "comparison_count": 217,
+  "method": "NFKC归一化后计算标题3字片段与正文5字片段Dice相似度",
+  "thresholds": {
+    "body": 0.55,
+    "title": 0.72
+  },
+  "highest_body_score": 0.0368,
+  "highest_title_score": 0.36,
+  "threshold_hit_count": 0,
+  "pass": true,
+  "final_global_rescan_required": true
+}

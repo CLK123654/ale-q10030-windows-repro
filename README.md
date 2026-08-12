@@ -1,7 +1,7 @@
 # 回调出站队列的PostgreSQL租约领取与幂等回执
 
-本仓库只对应一项PostgreSQL工作。artifacts目录保存最终四附件，task目录保存题目正文，scripts目录提供windows-2025工作流入口。
+本仓库只对应一项PostgreSQL工作。artifacts目录保存四个附件，task目录保存题目正文，scripts目录提供windows-2025运行入口。
 
-工作流启动Windows镜像内的PostgreSQL17服务，从四附件解压材料，在两个含中文和空格的空目录中重建输出。它还会执行输入规则变化、缺文件失败和双会话行锁竞争，并上传运行证据。
+工作流启动Windows镜像内的PostgreSQL17服务，从附件解压材料，检查PostgreSQL对象、出站队列报表、PowerShell入口和并发行锁行为。
 
 业务数据全部是脱敏后重新编排的虚构样例，不包含线上凭据、用户资料或内部地址。

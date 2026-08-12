@@ -19,7 +19,8 @@
     "unexplained_hard_numbers": 0,
     "pseudo_citations": 0,
     "reasoning_breaks": 0,
-    "unique_implementation_prescriptions": 0
+    "unique_implementation_prescriptions": 0,
+    "candidate_score_answer_leak_hits": 0
   },
   "pattern_review": {
     "promotional_language": 0,

@@ -137,7 +137,13 @@ function Assert-NaturalText {
   $han = '[\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff]'
   $boundary = "(?:$han$space[A-Za-z0-9]|[A-Za-z0-9]$space$han|[A-Za-z]$space[0-9]|[0-9]$space[A-Za-z])"
   $riskTerms = @('此外', '至关重要', '深入探讨', '彰显', '赋能', '无缝', '不断演变的格局', '不仅', '不只是', '值得注意的是', '专家认为', '行业报告显示', '观察者指出', '未来展望', '挑战与未来', '——')
-  $processTerms = @('制题返修', '去AI', '修改题目', '规则调整', 'Windows复现', 'GitHub Actions', '双干净目录', '动态变化', '负例', '附件哈希', '飞书回读', 'record_id', 'file_token')
+  $processTerms = @(
+    '制题', '返修', '去AI', '修改题目', '规则调整', 'Windows复现', 'Windows验证', 'GitHub Actions', 'CI门禁',
+    '双干净目录', '动态变化', '动态改参', '负例', '附件哈希', '飞书回读',
+    'Reference', 'reference.zip', 'reference_members', 'validation', 'expected_', 'ground_truth', 'baseline_count',
+    '控制量', '不变量', '连续执行', '重复执行', '连续运行', '重复运行', '复跑', '失败清理', '失败关闭',
+    'record_id', 'file_token'
+  )
   foreach ($text in $Texts) {
     foreach ($character in $quoteCharacters) {
       Assert-True (-not $text.Contains([string]$character)) "$Label contains a forbidden quote"
@@ -467,9 +473,13 @@ try {
   Assert-NaturalText @($textValues) 'task natural language'
 
   $humanizer = Get-Content -LiteralPath (Join-Path $RepositoryRoot 'qa/humanizer_review.json') -Raw | ConvertFrom-Json
+  $staticReview = Get-Content -LiteralPath (Join-Path $RepositoryRoot 'qa/static_text_gate.json') -Raw | ConvertFrom-Json
+  $scoreLeak = Get-Content -LiteralPath (Join-Path $RepositoryRoot 'qa/score_answer_leak_gate.json') -Raw | ConvertFrom-Json
   Assert-True ($humanizer.pass -eq $true) 'humanizer review did not pass'
   Assert-True ($humanizer.scores.total -ge 45) 'humanizer score below 45'
   Assert-True ($humanizer.online_ai_detection_used_as_conclusion -eq $false) 'online AI field was used as a conclusion'
+  Assert-True ($staticReview.pass -eq $true -and $staticReview.violations.Count -eq 0 -and $staticReview.humanizer_risk_hits.Count -eq 0) 'static language review failed'
+  Assert-True ($scoreLeak.pass -eq $true -and $scoreLeak.hits.Count -eq 0) 'candidate score answer leak gate failed'
 
   $runOne = Invoke-CleanRun '第一次 中文 空格'
   $runTwo = Invoke-CleanRun '第二次 中文 空格'
